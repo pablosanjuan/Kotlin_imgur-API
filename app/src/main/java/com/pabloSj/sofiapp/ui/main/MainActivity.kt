@@ -16,9 +16,10 @@ import com.facebook.shimmer.ShimmerFrameLayout
 import com.pabloSj.sofiapp.R
 import com.pabloSj.sofiapp.data.api.ApiClient
 import com.pabloSj.sofiapp.data.api.CardApiResponse
-import com.pabloSj.sofiapp.data.api.Service
+import com.pabloSj.sofiapp.data.api.service.Service
 import com.pabloSj.sofiapp.data.model.Card
 import com.pabloSj.sofiapp.ui.adapters.CardAdapter
+import com.pabloSj.sofiapp.utils.IMG_TYPE
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -42,24 +43,26 @@ class MainActivity : AppCompatActivity() {
 //        listSearch.add(ListSearch("cesar", R.drawable.index))
 //        listSearch.add(ListSearch("andres", R.drawable.index))
 //        listSearch.add(ListSearch("felipe", R.drawable.index))
-        doSearch()
+        doSearch(0,"cats", IMG_TYPE)
     }
 
-    private fun doSearch() {
+    private fun doSearch(page: Int, category:String, type:String) {
         val client = ApiClient()
         val service = client.provideHttpClient().create(Service::class.java)
-        val call: Call<CardApiResponse> = service.getSearch("dogs", "png")
+        val call: Call<CardApiResponse> = service.getSearch(page, category, type)
         call.enqueue(object : Callback<CardApiResponse> {
             override fun onResponse(call: Call<CardApiResponse>, response: Response<CardApiResponse>) {
-                val success = response.body()!!.success /** @QUITAR */
-                val status = response.body()!!.status   /** @QUITAR */
-                val data = response.body()!!.data
-                mShimmerViewContainer?. let{
-                    it.stopShimmerAnimation()
-                    it.visibility = View.GONE
+                if(response.body()!!.success=="true") {
+                    val data = response.body()!!.data
+                    mShimmerViewContainer?.let {
+                        it.stopShimmerAnimation()
+                        it.visibility = View.GONE
+                    }
+                    val adapter = CardAdapter(data)
+                    rv.adapter = adapter
+                }else{
+                    Log.d("e","Error Response")
                 }
-                val adapter = CardAdapter(data)
-                rv.adapter = adapter
             }
 
             override fun onFailure(call: Call<CardApiResponse>, t: Throwable) {

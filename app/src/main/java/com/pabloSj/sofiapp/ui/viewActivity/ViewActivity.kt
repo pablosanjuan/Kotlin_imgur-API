@@ -8,6 +8,8 @@ import android.view.MenuItem
 import android.view.View
 import com.bumptech.glide.Glide
 import com.pabloSj.sofiapp.R
+import com.pabloSj.sofiapp.utils.IMAGE_CARD
+import com.pabloSj.sofiapp.utils.TITLE_CARD
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_view.*
@@ -31,8 +33,8 @@ class ViewActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             val extras = intent.extras
             if (extras != null) {
-                txtView = extras.getString("title")
-                imgView = extras.getString("image")
+                txtView = extras.getString(TITLE_CARD)
+                imgView = extras.getString(IMAGE_CARD)
             }
         }
         titleView.text = txtView
@@ -43,7 +45,7 @@ class ViewActivity : AppCompatActivity() {
                 }
 
                 override fun onError(e: Exception?) {
-                    Picasso.get().load(R.drawable.ic_image).into(imageView)
+                    Picasso.get().load(R.drawable.error_image).into(imageView)
                 }
             })
     }
