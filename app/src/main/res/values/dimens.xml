@@ -8,4 +8,11 @@
 	<dimen name="regular_padding">16dp</dimen>
 	<!--## TEXR ##-->
 	<dimen name="title_view">18sp</dimen>
+	<!--## TEXR ##-->
+	<dimen name="image_card">240dp</dimen>
+	<!--## SHINE ##-->
+	<dimen name="activityPadding">16dp</dimen>
+	<dimen name="placeholderImage">60dp</dimen>
+	<dimen name="placeholderTextHeight">8dp</dimen>
+	<dimen name="padding_10">10dp</dimen>
 </resources>

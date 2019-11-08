@@ -7,10 +7,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import android.view.View
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.facebook.shimmer.ShimmerFrameLayout
 import com.pabloSj.sofiapp.R
 import com.pabloSj.sofiapp.data.api.ApiClient
 import com.pabloSj.sofiapp.data.api.CardApiResponse
@@ -25,11 +27,13 @@ import retrofit2.Response
 class MainActivity : AppCompatActivity() {
 
     private lateinit var adapter: CardAdapter
+    private var mShimmerViewContainer: ShimmerFrameLayout? = null
 
     @SuppressLint("WrongConstant")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        mShimmerViewContainer = findViewById(R.id.shimmer_view_container)
         val listCards = ArrayList<Card>()
         adapter = CardAdapter(listCards)
         rv.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
@@ -50,6 +54,10 @@ class MainActivity : AppCompatActivity() {
                 val success = response.body()!!.success /** @QUITAR */
                 val status = response.body()!!.status   /** @QUITAR */
                 val data = response.body()!!.data
+                mShimmerViewContainer?. let{
+                    it.stopShimmerAnimation()
+                    it.visibility = View.GONE
+                }
                 val adapter = CardAdapter(data)
                 rv.adapter = adapter
             }
@@ -82,5 +90,15 @@ class MainActivity : AppCompatActivity() {
             }
         })
         return true
+    }
+
+    public override fun onResume() {
+        super.onResume()
+        mShimmerViewContainer?.startShimmerAnimation()
+    }
+
+    override fun onPause() {
+        mShimmerViewContainer?.stopShimmerAnimation()
+        super.onPause()
     }
 }
