@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!--## MARGIN ##-->
+	<dimen name="regular_margin">16dp</dimen>
+	<!--## PADDING ##-->
+	<dimen name="regular_padding">16dp</dimen>
+	<!--## TEXR ##-->
+	<dimen name="title_view">18sp</dimen>
+</resources>
