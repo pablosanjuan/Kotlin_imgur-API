@@ -8,7 +8,10 @@ import android.view.MenuItem
 import android.view.View
 import com.bumptech.glide.Glide
 import com.pabloSj.sofiapp.R
+import com.squareup.picasso.Callback
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_view.*
+import java.lang.Exception
 
 class ViewActivity : AppCompatActivity() {
     private var txtView: String? = ""
@@ -25,12 +28,24 @@ class ViewActivity : AppCompatActivity() {
             it.setDisplayHomeAsUpEnabled(true)
         }
 
-        if (savedInstanceState!=null){
-            txtView = savedInstanceState.getString("title")
-            imgView = savedInstanceState.getString("image")
+        if (savedInstanceState == null) {
+            val extras = intent.extras
+            if (extras != null) {
+                txtView = extras.getString("title")
+                imgView = extras.getString("image")
+            }
         }
         titleView.text = txtView
-        Glide.with(this).load(resources.getDrawable(R.drawable.index)).into(imageView)
+        Picasso.get()
+            .load(imgView)
+            .into(imageView,object: Callback{
+                override fun onSuccess() {
+                }
+
+                override fun onError(e: Exception?) {
+                    Picasso.get().load(R.drawable.ic_image).into(imageView)
+                }
+            })
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
