@@ -24,6 +24,7 @@ class CardAdapter(ListSearch: List<Card>) : RecyclerView.Adapter<CardAdapter.Vie
 
     var cardItem=ListSearch
     lateinit var context: Context
+    private var currentList: List<Card>? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         context = parent.context
@@ -66,4 +67,6 @@ class CardAdapter(ListSearch: List<Card>) : RecyclerView.Adapter<CardAdapter.Vie
             }
         }
     }
+
+    fun getCurrentList(): List<Card> = currentList ?: emptyList()
 }

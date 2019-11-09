@@ -1,21 +1,20 @@
 package com.pabloSj.sofiapp.data.api.service
 
+import androidx.lifecycle.LiveData
+import com.pabloSj.sofiapp.data.api.ApiResponse
 import com.pabloSj.sofiapp.data.api.CardApiResponse
-import com.pabloSj.sofiapp.utils.PATH
-import retrofit2.Call
-import retrofit2.http.GET
-import retrofit2.http.Headers
-import retrofit2.http.Path
-import retrofit2.http.Query
+import com.pabloSj.sofiapp.data.model.Event
+import com.pabloSj.sofiapp.data.model.Resource
+import retrofit2.http.*
 
-interface Service {
+interface appService {
 
     @Headers("Authorization: Client-ID 126701cd8332f32")
     @GET("{page}?")
     //@GET("1?")
-    fun getSearch(
+    fun doSearch(
         @Path("page") page: Int,
         @Query("q") category: String,
         @Query("q_type") typeFilter: String
-    ):Call<CardApiResponse>
+    ): LiveData<ApiResponse<CardApiResponse>>//Call<CardApiResponse>
 }

@@ -1,4 +1,4 @@
-package com.pabloSj.sofiapp.utils;
+package com.pabloSj.sofiapp.utils
 
 const val API_URL="https://api.imgur.com/3/gallery/search/time/"
 const val PATH="1?q=cats"

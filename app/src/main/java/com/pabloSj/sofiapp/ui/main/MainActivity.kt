@@ -3,47 +3,107 @@ package com.pabloSj.sofiapp.ui.main
 import android.annotation.SuppressLint
 import android.app.SearchManager
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.View
 import androidx.appcompat.widget.SearchView
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.pabloSj.sofiapp.R
-import com.pabloSj.sofiapp.data.api.ApiClient
-import com.pabloSj.sofiapp.data.api.CardApiResponse
-import com.pabloSj.sofiapp.data.api.service.Service
 import com.pabloSj.sofiapp.data.model.Card
+import com.pabloSj.sofiapp.data.model.Status
 import com.pabloSj.sofiapp.ui.adapters.CardAdapter
+import com.pabloSj.sofiapp.ui.base.BaseActivity
 import com.pabloSj.sofiapp.utils.IMG_TYPE
+import dagger.android.AndroidInjector
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import javax.inject.Inject
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity<com.pabloSj.sofiapp.databinding.ActivityMainBinding, MainActivityViewModel>(),
+    HasSupportFragmentInjector {
 
+    @Inject
+    lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
     private lateinit var adapter: CardAdapter
     lateinit var layoutManager: LinearLayoutManager
     private var mShimmerViewContainer: ShimmerFrameLayout? = null
-
     var page = 0
 
-    @SuppressLint("WrongConstant")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        mShimmerViewContainer = findViewById(R.id.shimmer_view_container)
+        setAndBindContentView(R.layout.activity_main)
+        viewModel.search("pablo")
+        observeViewModel()
         setupRecyclerView()
-        val searchParameter = "ta"
-            supportActionBar?.let {
-                it.title = "Do a search!"
-            }
-        doSearch(0, "ta", IMG_TYPE)
     }
+
+    private fun observeViewModel() {
+        viewModel.searching.observe(this, Observer {
+            val filterData = ArrayList<Card>()
+            if (it?.status == Status.SUCCESS) {
+                mShimmerViewContainer?.let { it ->
+                    it.stopShimmerAnimation()
+                    it.visibility = View.GONE
+                }
+                val data = it.data?.data
+                if (data?.size == 0) {
+                    supportActionBar?.let {
+                        it.title = "0 results"
+                    }
+                }
+                /**@NOTE: filterData: i had to filter data to avoid error 404 from API - bug in API*/
+                for (i in 0 until data!!.size) {
+                    if (data?.get(i)?.type != null) {
+                        filterData.add(data[i])
+                    }
+                }
+                handleResponseEvent(filterData)
+                adapter = CardAdapter(filterData)
+                rv.adapter = adapter
+            } else {
+                Log.d("e", "Error Response")
+            }
+//        val ss = ""
+//            if (response.body()!!.success == "true") {
+            //                    load_more_bar.visibility = View.GONE
+//                    mShimmerViewContainer?.let {
+//                        it.stopShimmerAnimation()
+//                        it.visibility = View.GONE
+//                    }
+//                    val data = response.body()!!.data
+//                    if (data.size==0){
+//                        supportActionBar?.let {
+//                            it.title = "0 results"
+//                        }
+//                    }
+//                    /**@NOTE: filterData: i had to filter data to avoid error 404 from API - bug in API*/
+//                    for (i in 0..data.size - 1) {
+//                        if (data[i].type != null) {
+//                            filterData.add(data[i])
+//                        }
+//                    }
+//                    c
+            //handleResponseEvent(it)
+        })
+    }
+
+    private fun handleResponseEvent(filterData: ArrayList<Card>) {
+
+        if (viewModel.page == 1) {
+            viewModel.cachedJobsResultsList.value = filterData
+        } else
+            filterData.let {
+                viewModel.cachedJobsResultsList.value = adapter.getCurrentList().union(it).toList()
+            }
+
+    }
+
 
     @SuppressLint("WrongConstant")
     private fun setupRecyclerView() {
@@ -55,50 +115,13 @@ class MainActivity : AppCompatActivity() {
                 layoutManager = recyclerView.layoutManager as LinearLayoutManager
                 if (layoutManager.findLastCompletelyVisibleItemPosition() == adapter.itemCount - 1) {
                     page += 1
-                    load_more_bar.visibility = View.VISIBLE
-                    doSearch(page, "ta", IMG_TYPE)
+                    //load_more_bar.visibility = View.VISIBLE
+                    //doSearch(page, "ta", IMG_TYPE)
                 }
             }
         })
     }
 
-    private fun doSearch(page: Int, category: String, type: String) {
-        val client = ApiClient()
-        val service = client.provideHttpClient().create(Service::class.java)
-        val call: Call<CardApiResponse> = service.getSearch(page, category, type)
-        val filterData = ArrayList<Card>()
-        call.enqueue(object : Callback<CardApiResponse> {
-            override fun onResponse(call: Call<CardApiResponse>, response: Response<CardApiResponse>) {
-                if (response.body()!!.success == "true") {
-                    load_more_bar.visibility = View.GONE
-                    mShimmerViewContainer?.let {
-                        it.stopShimmerAnimation()
-                        it.visibility = View.GONE
-                    }
-                    val data = response.body()!!.data
-                    if (data.size==0){
-                        supportActionBar?.let {
-                            it.title = "0 results"
-                        }
-                    }
-                    /**@NOTE: filterData: i had to filter data to avoid error 404 from API - bug in API*/
-                    for (i in 0..data.size - 1) {
-                        if (data[i].type != null) {
-                            filterData.add(data[i])
-                        }
-                    }
-                    adapter = CardAdapter(filterData)
-                    rv.adapter = adapter
-                } else {
-                    Log.d("e", "Error Response")
-                }
-            }
-
-            override fun onFailure(call: Call<CardApiResponse>, t: Throwable) {
-                Log.d("error", t.message)
-            }
-        })
-    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflate = menuInflater
@@ -119,7 +142,7 @@ class MainActivity : AppCompatActivity() {
                 supportActionBar?.let {
                     it.title = "Search: $p0"
                 }
-                doSearch(page,p0!!, IMG_TYPE)
+
                 return true
             }
 
@@ -139,4 +162,6 @@ class MainActivity : AppCompatActivity() {
         mShimmerViewContainer?.stopShimmerAnimation()
         super.onPause()
     }
+
+    override fun supportFragmentInjector(): AndroidInjector<Fragment> = dispatchingAndroidInjector
 }
