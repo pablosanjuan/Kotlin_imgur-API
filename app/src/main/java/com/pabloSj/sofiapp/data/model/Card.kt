@@ -24,6 +24,7 @@ data class Card(
 //    @SerializedName("score") var score: Int,
 //    @SerializedName("is_album") var is_album: Boolean
 
+    @SerializedName("type") var type: String,
     @SerializedName("account_id") val account_id:Int,
     @SerializedName("account_url") val account_url:String,
     @SerializedName("comment_count") val comment_count:Int,

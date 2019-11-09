@@ -11,8 +11,8 @@ import retrofit2.http.Query
 interface Service {
 
     @Headers("Authorization: Client-ID 126701cd8332f32")
-//    @GET("{page}?")
-    @GET("1?")
+    @GET("{page}?")
+    //@GET("1?")
     fun getSearch(
         @Path("page") page: Int,
         @Query("q") category: String,

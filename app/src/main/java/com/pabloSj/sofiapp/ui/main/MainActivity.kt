@@ -8,10 +8,9 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.View
-import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.pabloSj.sofiapp.R
 import com.pabloSj.sofiapp.data.api.ApiClient
@@ -28,40 +27,70 @@ import retrofit2.Response
 class MainActivity : AppCompatActivity() {
 
     private lateinit var adapter: CardAdapter
+    lateinit var layoutManager: LinearLayoutManager
     private var mShimmerViewContainer: ShimmerFrameLayout? = null
+
+    var page = 0
 
     @SuppressLint("WrongConstant")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         mShimmerViewContainer = findViewById(R.id.shimmer_view_container)
-        val listCards = ArrayList<Card>()
-        adapter = CardAdapter(listCards)
-        rv.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
-//        val listSearch=ArrayList<ListSearch>()
-//        listSearch.add(ListSearch("pablo", R.drawable.index))
-//        listSearch.add(ListSearch("cesar", R.drawable.index))
-//        listSearch.add(ListSearch("andres", R.drawable.index))
-//        listSearch.add(ListSearch("felipe", R.drawable.index))
-        doSearch(0,"cats", IMG_TYPE)
+        setupRecyclerView()
+        val searchParameter = "ta"
+            supportActionBar?.let {
+                it.title = "Do a search!"
+            }
+        doSearch(0, "ta", IMG_TYPE)
     }
 
-    private fun doSearch(page: Int, category:String, type:String) {
+    @SuppressLint("WrongConstant")
+    private fun setupRecyclerView() {
+        rv.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        val listCards = ArrayList<Card>()
+        adapter = CardAdapter(listCards)
+        rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                if (layoutManager.findLastCompletelyVisibleItemPosition() == adapter.itemCount - 1) {
+                    page += 1
+                    load_more_bar.visibility = View.VISIBLE
+                    doSearch(page, "ta", IMG_TYPE)
+                }
+            }
+        })
+    }
+
+    private fun doSearch(page: Int, category: String, type: String) {
         val client = ApiClient()
         val service = client.provideHttpClient().create(Service::class.java)
         val call: Call<CardApiResponse> = service.getSearch(page, category, type)
+        val filterData = ArrayList<Card>()
         call.enqueue(object : Callback<CardApiResponse> {
             override fun onResponse(call: Call<CardApiResponse>, response: Response<CardApiResponse>) {
-                if(response.body()!!.success=="true") {
-                    val data = response.body()!!.data
+                if (response.body()!!.success == "true") {
+                    load_more_bar.visibility = View.GONE
                     mShimmerViewContainer?.let {
                         it.stopShimmerAnimation()
                         it.visibility = View.GONE
                     }
-                    val adapter = CardAdapter(data)
+                    val data = response.body()!!.data
+                    if (data.size==0){
+                        supportActionBar?.let {
+                            it.title = "0 results"
+                        }
+                    }
+                    /**@NOTE: filterData: i had to filter data to avoid error 404 from API - bug in API*/
+                    for (i in 0..data.size - 1) {
+                        if (data[i].type != null) {
+                            filterData.add(data[i])
+                        }
+                    }
+                    adapter = CardAdapter(filterData)
                     rv.adapter = adapter
-                }else{
-                    Log.d("e","Error Response")
+                } else {
+                    Log.d("e", "Error Response")
                 }
             }
 
@@ -72,7 +101,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-
         val inflate = menuInflater
         inflate.inflate(R.menu.menu_search, menu)
         val manager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
@@ -84,7 +112,14 @@ class MainActivity : AppCompatActivity() {
                 viewSearch.clearFocus()
                 viewSearch.setQuery("", false)
                 searchIcon.collapseActionView()
-                Toast.makeText(this@MainActivity, p0, Toast.LENGTH_LONG).show()
+                mShimmerViewContainer?.let {
+                    it.startShimmerAnimation()
+                    it.visibility = View.VISIBLE
+                }
+                supportActionBar?.let {
+                    it.title = "Search: $p0"
+                }
+                doSearch(page,p0!!, IMG_TYPE)
                 return true
             }
 
