@@ -1,5 +1,7 @@
 package com.pabloSj.sofiapp.ui.adapters
 
+import android.app.Activity
+import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
@@ -7,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.app.ActivityOptionsCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.pabloSj.sofiapp.R
 import com.pabloSj.sofiapp.data.model.Card
@@ -55,10 +58,25 @@ class CardAdapter(ListSearch: List<Card>) : RecyclerView.Adapter<CardAdapter.Vie
                 })
 
             itemView.setOnClickListener {
+//                val intent = Intent(context, ViewActivity::class.java)
+//                intent.putExtra(TITLE_CARD, data.title)
+//                intent.putExtra(IMAGE_CARD, data.link)
+//                context.startActivity(intent)
+
+//                val intent = Intent(context, ViewActivity::class.java)
+//                intent.putExtra(TITLE_CARD, data.title)
+//                intent.putExtra(IMAGE_CARD, data.link)
+//
+//                val options = ActivityOptionsCompat.makeSceneTransitionAnimation(context as Activity, cv as View, "appcard")
+//                context.startActivity(intent, options.toBundle())
+
+//
+                val options = ActivityOptions.makeSceneTransitionAnimation(context as Activity)
                 val intent = Intent(context, ViewActivity::class.java)
                 intent.putExtra(TITLE_CARD, data.title)
                 intent.putExtra(IMAGE_CARD, data.link)
-                context.startActivity(intent)
+                context.startActivity(intent, options.toBundle())
+
             }
         }
     }
