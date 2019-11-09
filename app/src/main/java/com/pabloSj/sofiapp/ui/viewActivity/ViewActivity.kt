@@ -1,12 +1,10 @@
 package com.pabloSj.sofiapp.ui.viewActivity
 
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import com.bumptech.glide.Glide
 import com.pabloSj.sofiapp.R
 import com.pabloSj.sofiapp.utils.IMAGE_CARD
 import com.pabloSj.sofiapp.utils.TITLE_CARD

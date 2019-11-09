@@ -3,27 +3,6 @@ package com.pabloSj.sofiapp.data.model
 import com.google.gson.annotations.SerializedName
 
 data class Card(
-//    @SerializedName("id") var id: String,
-//    @SerializedName("title") var title: String,
-//    @SerializedName("description") var description: String,
-//    @SerializedName("datetime") var datetime: Int,
-//    @SerializedName("type") var type: String,
-//    @SerializedName("animated") var animated: Boolean,
-//    @SerializedName("width") var width: Int,
-//    @SerializedName("height") var height: Int,
-//    @SerializedName("size") var size: Int,
-//    @SerializedName("views") var views: Int,
-//    @SerializedName("comment_count") var comment_count: Int,
-//    @SerializedName("vote") var vote: String,
-//    @SerializedName("section") var section: String,
-//    @SerializedName("account_url") var account_url: String,
-//    @SerializedName("account_id") var account_id: Int,
-//    @SerializedName("ups") var ups: Int,
-//    @SerializedName("downs") var downs: Int,
-//    @SerializedName("points") var points: Int,
-//    @SerializedName("score") var score: Int,
-//    @SerializedName("is_album") var is_album: Boolean
-
     @SerializedName("type") var type: String,
     @SerializedName("account_id") val account_id:Int,
     @SerializedName("account_url") val account_url:String,
