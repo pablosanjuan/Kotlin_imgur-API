@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -18,7 +19,6 @@ import com.pabloSj.sofiapp.data.model.Card
 import com.pabloSj.sofiapp.data.model.Status
 import com.pabloSj.sofiapp.ui.adapters.CardAdapter
 import com.pabloSj.sofiapp.ui.base.BaseActivity
-import com.pabloSj.sofiapp.utils.IMG_TYPE
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
@@ -33,12 +33,14 @@ class MainActivity : BaseActivity<com.pabloSj.sofiapp.databinding.ActivityMainBi
     private lateinit var adapter: CardAdapter
     lateinit var layoutManager: LinearLayoutManager
     private var mShimmerViewContainer: ShimmerFrameLayout? = null
-    var page = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setAndBindContentView(R.layout.activity_main)
-        viewModel.search("pablo")
+        mShimmerViewContainer = findViewById(R.id.shimmer_view_container)
+        viewModel.page.value = 1
+        viewModel.searchParameter.value = "a"
+        viewModel.search(viewModel.searchParameter.value!!)
         observeViewModel()
         setupRecyclerView()
     }
@@ -47,10 +49,6 @@ class MainActivity : BaseActivity<com.pabloSj.sofiapp.databinding.ActivityMainBi
         viewModel.searching.observe(this, Observer {
             val filterData = ArrayList<Card>()
             if (it?.status == Status.SUCCESS) {
-                mShimmerViewContainer?.let { it ->
-                    it.stopShimmerAnimation()
-                    it.visibility = View.GONE
-                }
                 val data = it.data?.data
                 if (data?.size == 0) {
                     supportActionBar?.let {
@@ -64,46 +62,32 @@ class MainActivity : BaseActivity<com.pabloSj.sofiapp.databinding.ActivityMainBi
                     }
                 }
                 handleResponseEvent(filterData)
-                adapter = CardAdapter(filterData)
-                rv.adapter = adapter
             } else {
                 Log.d("e", "Error Response")
             }
-//        val ss = ""
-//            if (response.body()!!.success == "true") {
-            //                    load_more_bar.visibility = View.GONE
-//                    mShimmerViewContainer?.let {
-//                        it.stopShimmerAnimation()
-//                        it.visibility = View.GONE
-//                    }
-//                    val data = response.body()!!.data
-//                    if (data.size==0){
-//                        supportActionBar?.let {
-//                            it.title = "0 results"
-//                        }
-//                    }
-//                    /**@NOTE: filterData: i had to filter data to avoid error 404 from API - bug in API*/
-//                    for (i in 0..data.size - 1) {
-//                        if (data[i].type != null) {
-//                            filterData.add(data[i])
-//                        }
-//                    }
-//                    c
-            //handleResponseEvent(it)
         })
     }
 
     private fun handleResponseEvent(filterData: ArrayList<Card>) {
-
-        if (viewModel.page == 1) {
-            viewModel.cachedJobsResultsList.value = filterData
+        load_more_bar.visibility = View.GONE
+        mShimmerViewContainer?.let { it ->
+            it.stopShimmerAnimation()
+            it.visibility = View.GONE
+        }
+        if (viewModel.page.value == 1) {
+            adapter = CardAdapter(filterData)
+            rv.adapter = adapter
         } else
             filterData.let {
-                viewModel.cachedJobsResultsList.value = adapter.getCurrentList().union(it).toList()
+                //adapter = CardAdapter(filterData)
+                //val updateList = adapter.getCurrentList().union(filterData).toList()
+                adapter = CardAdapter(adapter.getCurrentList().union(filterData).toList())
+                rv.adapter = adapter
+                //adapter.notifyDataSetChanged()
+                //adapter.addData(filterData)
+                //viewModel.cachedList.value = adapter.notifyDataSetChanged()// getCurrentList().union(it).toList()
             }
-
     }
-
 
     @SuppressLint("WrongConstant")
     private fun setupRecyclerView() {
@@ -113,15 +97,14 @@ class MainActivity : BaseActivity<com.pabloSj.sofiapp.databinding.ActivityMainBi
         rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                Toast.makeText(this@MainActivity, viewModel.page.value.toString()+" , "+ layoutManager.findLastCompletelyVisibleItemPosition().toString() +" , "+  (adapter.itemCount-1).toString(), Toast.LENGTH_LONG).show()
                 if (layoutManager.findLastCompletelyVisibleItemPosition() == adapter.itemCount - 1) {
-                    page += 1
-                    //load_more_bar.visibility = View.VISIBLE
-                    //doSearch(page, "ta", IMG_TYPE)
+                    load_more_bar.visibility = View.VISIBLE
+                    viewModel.loadNextPage(viewModel.searchParameter.value!!)
                 }
             }
         })
     }
-
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflate = menuInflater
@@ -142,7 +125,9 @@ class MainActivity : BaseActivity<com.pabloSj.sofiapp.databinding.ActivityMainBi
                 supportActionBar?.let {
                     it.title = "Search: $p0"
                 }
-
+                viewModel.searchParameter.value = p0
+                viewModel.page.value = 1
+                viewModel.search(viewModel.searchParameter.value!!)
                 return true
             }
 

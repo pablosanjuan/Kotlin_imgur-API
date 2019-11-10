@@ -6,5 +6,5 @@ import com.pabloSj.sofiapp.data.model.Event
 import com.pabloSj.sofiapp.data.model.Resource
 
 interface Repository {
-	fun doSearchRepo(page: Int, whatField: String, whereField: String): LiveData<Resource<CardApiResponse>>
+	fun doSearchRepo(page: Int, search_parameter: String, type_img: String): LiveData<Resource<CardApiResponse>>
 }

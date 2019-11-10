@@ -10,23 +10,30 @@ import com.pabloSj.sofiapp.data.model.Event
 import com.pabloSj.sofiapp.data.model.Resource
 import com.pabloSj.sofiapp.data.repository.Repository
 import com.pabloSj.sofiapp.utils.AbsentLiveData
+import com.pabloSj.sofiapp.utils.IMG_TYPE
 import javax.inject.Inject
 
 class MainActivityViewModel @Inject constructor(repository: Repository) :ViewModel() {
 
-    var page = 1
-    val cachedJobsResultsList = MutableLiveData<List<Card>>()
+    var page = MutableLiveData<Int?>()
+    val cachedList = MutableLiveData<List<Card>>()
+    val searchParameter = MutableLiveData<String?>()
 
-    private val _searching = MutableLiveData<String>()
+    private val serachParam = MutableLiveData<String>()
     fun search(searchData: String) {
-        _searching.value = searchData
+        serachParam.value = searchData
     }
 
-    val searching: LiveData<Resource<CardApiResponse>> = Transformations.switchMap(_searching) {
+    val searching: LiveData<Resource<CardApiResponse>> = Transformations.switchMap(serachParam) {
         if (it == null)
             AbsentLiveData.create()
         else
-            repository.doSearchRepo(page,"cat", "cat")
+            repository.doSearchRepo(page.value!!,it, IMG_TYPE)
+    }
+
+    fun loadNextPage(category: String) {
+                page.value = page.value?.plus(1)
+                    search(category)
     }
 
 }

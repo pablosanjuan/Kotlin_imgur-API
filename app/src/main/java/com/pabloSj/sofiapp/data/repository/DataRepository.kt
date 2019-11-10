@@ -17,11 +17,11 @@ import javax.inject.Singleton
 @Singleton
 class DataRepository @Inject constructor(private val service: appService, private val resources: Resources): Repository {
 
-	override fun doSearchRepo(page: Int, whatField: String, whereField: String): LiveData<Resource<CardApiResponse>> {
+	override fun doSearchRepo(page: Int, search_parameter: String, type_img: String): LiveData<Resource<CardApiResponse>> {
 		return Transformations.map(service.doSearch(
 			page = page,
-			category =  "cats",
-			typeFilter = "png"))
+			category =  search_parameter,
+			typeFilter = type_img))
 		{ response ->
 			when (response) {
 				is ApiSuccessResponse -> Resource.success(response.body)

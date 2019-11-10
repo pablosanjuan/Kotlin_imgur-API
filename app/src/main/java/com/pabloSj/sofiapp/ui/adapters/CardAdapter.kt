@@ -19,6 +19,7 @@ import com.pabloSj.sofiapp.utils.TITLE_CARD
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import java.lang.Exception
+import java.util.Collections.addAll
 
 class CardAdapter(ListSearch: List<Card>) : RecyclerView.Adapter<CardAdapter.ViewHolder>(){
 
@@ -69,4 +70,11 @@ class CardAdapter(ListSearch: List<Card>) : RecyclerView.Adapter<CardAdapter.Vie
     }
 
     fun getCurrentList(): List<Card> = currentList ?: emptyList()
+
+    fun addData(listItems: ArrayList<Card>) {
+        var size = listItems.size
+        addAll(listItems)
+        var sizeNew = listItems.size
+        notifyItemRangeChanged(size, sizeNew)
+    }
 }
