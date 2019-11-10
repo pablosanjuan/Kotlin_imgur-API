@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.app.ActivityOptionsCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.pabloSj.sofiapp.R
 import com.pabloSj.sofiapp.data.model.Card
@@ -19,13 +18,11 @@ import com.pabloSj.sofiapp.utils.TITLE_CARD
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import java.lang.Exception
-import java.util.Collections.addAll
 
 class CardAdapter(ListSearch: List<Card>) : RecyclerView.Adapter<CardAdapter.ViewHolder>(){
 
     var cardItem=ListSearch
     lateinit var context: Context
-    private var currentList: List<Card>? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         context = parent.context
@@ -67,14 +64,5 @@ class CardAdapter(ListSearch: List<Card>) : RecyclerView.Adapter<CardAdapter.Vie
                 context.startActivity(intent, options.toBundle())
             }
         }
-    }
-
-    fun getCurrentList(): List<Card> = currentList ?: emptyList()
-
-    fun addData(listItems: ArrayList<Card>) {
-        var size = listItems.size
-        addAll(listItems)
-        var sizeNew = listItems.size
-        notifyItemRangeChanged(size, sizeNew)
     }
 }

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/alert_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:layout_marginStart="@dimen/regular_margin"
+        android:layout_marginEnd="@dimen/regular_margin"
+        android:layout_marginTop="@dimen/regular_margin"
+        android:text="@string/do_you_want_to_cloase_app"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="@dimen/myName" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/background_grey"
+        android:layout_marginTop="@dimen/regular_margin"
+        android:layout_marginBottom="@dimen/regular_margin"
+        android:layout_marginStart="@dimen/regular_margin"
+        android:layout_marginEnd="@dimen/regular_margin"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/cancelButton"
+            android:background="@drawable/clicked_alert_dialog_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:lines="1"
+            android:padding="5dp"
+            android:textAlignment="center"
+            android:text="@string/cancel"
+            android:textColor="@color/text_grey"
+            android:textSize="@dimen/myName"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/acceptButton"
+            />
+
+        <TextView
+            android:id="@+id/acceptButton"
+            android:background="@drawable/clicked_alert_dialog_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:lines="1"
+            android:padding="5dp"
+            android:text="@string/accept"
+            android:textAlignment="center"
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/myName"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/cancelButton"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

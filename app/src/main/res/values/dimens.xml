@@ -8,6 +8,7 @@
 	<dimen name="regular_padding">16dp</dimen>
 	<!--## TEXR ##-->
 	<dimen name="title_view">18sp</dimen>
+	<dimen name="myName">14sp</dimen>
 	<!--## TEXR ##-->
 	<dimen name="image_card">240dp</dimen>
 	<!--## SHINE ##-->

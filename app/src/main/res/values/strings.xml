@@ -1,4 +1,8 @@
 <resources>
-    <string name="app_name">SoFiApp</string>
-    <string name="image_description">Image Description</string>
+	<string name="app_name">SoFiApp</string>
+	<string name="image_description">Image Description</string>
+	<string name="by_pablo_sanjuan">By Pablo Sanjuan</string>
+	<string name="do_you_want_to_cloase_app">Do you want to close this app?</string>
+	<string name="cancel">Cancel</string>
+	<string name="accept">Accept</string>
 </resources>

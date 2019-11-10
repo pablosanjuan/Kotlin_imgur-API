@@ -9,7 +9,6 @@ import com.pabloSj.sofiapp.data.api.ApiErrorResponse
 import com.pabloSj.sofiapp.data.api.ApiSuccessResponse
 import com.pabloSj.sofiapp.data.api.CardApiResponse
 import com.pabloSj.sofiapp.data.api.service.appService
-import com.pabloSj.sofiapp.data.model.Event
 import com.pabloSj.sofiapp.data.model.Resource
 import javax.inject.Inject
 import javax.inject.Singleton

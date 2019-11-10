@@ -5,9 +5,9 @@ import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -23,6 +23,7 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.custom_alert_dialog.view.*
 import javax.inject.Inject
 
 class MainActivity : BaseActivity<com.pabloSj.sofiapp.databinding.ActivityMainBinding, MainActivityViewModel>(),
@@ -40,6 +41,9 @@ class MainActivity : BaseActivity<com.pabloSj.sofiapp.databinding.ActivityMainBi
         mShimmerViewContainer = findViewById(R.id.shimmer_view_container)
         viewModel.page.value = 1
         viewModel.searchParameter.value = "a"
+        supportActionBar?.let {
+            it.title = "Do a search"
+        }
         viewModel.search(viewModel.searchParameter.value!!)
         observeViewModel()
         setupRecyclerView()
@@ -52,7 +56,7 @@ class MainActivity : BaseActivity<com.pabloSj.sofiapp.databinding.ActivityMainBi
                 val data = it.data?.data
                 if (data?.size == 0) {
                     supportActionBar?.let {
-                        it.title = "0 results"
+                        it.title = "0 results, do a new search"
                     }
                 }
                 /**@NOTE: filterData: i had to filter data to avoid error 404 from API - bug in API*/
@@ -79,13 +83,9 @@ class MainActivity : BaseActivity<com.pabloSj.sofiapp.databinding.ActivityMainBi
             rv.adapter = adapter
         } else
             filterData.let {
-                //adapter = CardAdapter(filterData)
-                //val updateList = adapter.getCurrentList().union(filterData).toList()
-                adapter = CardAdapter(adapter.getCurrentList().union(filterData).toList())
+                viewModel.cachedList.value = filterData
+                adapter = CardAdapter(filterData)
                 rv.adapter = adapter
-                //adapter.notifyDataSetChanged()
-                //adapter.addData(filterData)
-                //viewModel.cachedList.value = adapter.notifyDataSetChanged()// getCurrentList().union(it).toList()
             }
     }
 
@@ -97,7 +97,6 @@ class MainActivity : BaseActivity<com.pabloSj.sofiapp.databinding.ActivityMainBi
         rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 layoutManager = recyclerView.layoutManager as LinearLayoutManager
-                Toast.makeText(this@MainActivity, viewModel.page.value.toString()+" , "+ layoutManager.findLastCompletelyVisibleItemPosition().toString() +" , "+  (adapter.itemCount-1).toString(), Toast.LENGTH_LONG).show()
                 if (layoutManager.findLastCompletelyVisibleItemPosition() == adapter.itemCount - 1) {
                     load_more_bar.visibility = View.VISIBLE
                     viewModel.loadNextPage(viewModel.searchParameter.value!!)
@@ -146,6 +145,25 @@ class MainActivity : BaseActivity<com.pabloSj.sofiapp.databinding.ActivityMainBi
     override fun onPause() {
         mShimmerViewContainer?.stopShimmerAnimation()
         super.onPause()
+    }
+
+    override fun onBackPressed() {
+        showConfirmationDialog()
+    }
+
+    @SuppressLint("InflateParams")
+    private fun showConfirmationDialog() {
+        val mDialogView = LayoutInflater.from(this).inflate(R.layout.custom_alert_dialog, null)
+        val mBuilder = android.app.AlertDialog.Builder(this)
+            .setView(mDialogView)
+            .setCancelable(false)
+        val mAlertDialog = mBuilder.show()
+        mDialogView.acceptButton.setOnClickListener {
+            finish()
+        }
+        mDialogView.cancelButton.setOnClickListener {
+            mAlertDialog.dismiss()
+        }
     }
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = dispatchingAndroidInjector

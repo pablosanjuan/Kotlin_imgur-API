@@ -3,8 +3,6 @@ package com.pabloSj.sofiapp.data.api.service
 import androidx.lifecycle.LiveData
 import com.pabloSj.sofiapp.data.api.ApiResponse
 import com.pabloSj.sofiapp.data.api.CardApiResponse
-import com.pabloSj.sofiapp.data.model.Event
-import com.pabloSj.sofiapp.data.model.Resource
 import retrofit2.http.*
 
 interface appService {
@@ -16,5 +14,5 @@ interface appService {
         @Path("page") page: Int,
         @Query("q") category: String,
         @Query("q_type") typeFilter: String
-    ): LiveData<ApiResponse<CardApiResponse>>//Call<CardApiResponse>
+    ): LiveData<ApiResponse<CardApiResponse>>
 }

@@ -2,7 +2,7 @@ package com.pabloSj.sofiapp.data.api
 
 import retrofit2.Response
 
-@Suppress("unused") // T is used in extending classes
+@Suppress("unused")
 sealed class ApiResponse<T> {
     companion object {
         fun <T> create(error: Throwable): ApiErrorResponse<T> {

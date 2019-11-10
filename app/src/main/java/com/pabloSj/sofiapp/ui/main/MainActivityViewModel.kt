@@ -6,7 +6,6 @@ import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.pabloSj.sofiapp.data.api.CardApiResponse
 import com.pabloSj.sofiapp.data.model.Card
-import com.pabloSj.sofiapp.data.model.Event
 import com.pabloSj.sofiapp.data.model.Resource
 import com.pabloSj.sofiapp.data.repository.Repository
 import com.pabloSj.sofiapp.utils.AbsentLiveData
@@ -18,8 +17,8 @@ class MainActivityViewModel @Inject constructor(repository: Repository) :ViewMod
     var page = MutableLiveData<Int?>()
     val cachedList = MutableLiveData<List<Card>>()
     val searchParameter = MutableLiveData<String?>()
-
     private val serachParam = MutableLiveData<String>()
+
     fun search(searchData: String) {
         serachParam.value = searchData
     }
